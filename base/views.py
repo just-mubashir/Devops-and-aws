@@ -98,7 +98,7 @@ def send(request):
 def getMessages(request, room):
     room_details = Room.objects.get(name=room)
 
-    messages = Message.objects.filter(room=room_details.id)
+    messages = Message.objects.filter(room=room_details.uid)
     return JsonResponse({"messages":list(messages.values())})
 
 
