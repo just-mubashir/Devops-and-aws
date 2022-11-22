@@ -85,6 +85,20 @@ class Post(BaseModel):
     def __str__(self):
         return self.title + "\n" + self.description
 
+
+class Room(BaseModel):
+    name = models.CharField(max_length=1000)
+    def __str__(self):
+        return self.name
+
+
+class Message(BaseModel):
+    value = models.CharField(max_length=1000000)
+    user = models.CharField(max_length=1000000)
+    room = models.CharField(max_length=1000000)
+    def __str__(self):
+        return self.user
+
 @receiver(post_save , sender = User)
 def  send_email_token(sender , instance , created , **kwargs):
     try:
