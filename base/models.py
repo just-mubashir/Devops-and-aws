@@ -19,38 +19,40 @@ class Category(BaseModel):
     slug = models.SlugField(unique=True , null=True , blank=True)
     category_image = models.ImageField(upload_to="catgories")
 
+    def __str__(self) -> str:
+        return self.category_name
 
     def save(self , *args , **kwargs):
         self.slug = slugify(self.category_name)
         super(Category ,self).save(*args , **kwargs)
 
 
-# class Profile(BaseModel):
-#     user = models.OneToOneField(User , on_delete=models.CASCADE , related_name="profile")
-#     first_name = models.CharField(max_length=25)
-#     middle_name = models.CharField(max_length=25)
-#     last_name = models.CharField(max_length=25)
-#     address = models.CharField(max_length=255)
-#     city = models.CharField(max_length=100, null=False , blank=False)
-#     state = models.CharField(max_length=100, null=False , blank=False)
-#     country = models.CharField(max_length=100,default="India", null=False , blank=False)
-#     mobile = models.CharField(max_length=15,default="+91", unique=True, null=False , blank=False)
-#     email = models.EmailField(max_length=100, default="@gmail.com", unique=True, null=False , blank=False)
-#     pincode = models.IntegerField(max_length=6)
-#     token = models.CharField(max_length=100)
-#     mobile_otp = models.CharField(max_length=100)
-#     email_otp = models.CharField(max_length=100)
-#     blank1 = models.CharField(max_length=100)
-#     blank2 = models.CharField(max_length=100)
-#     blank3 = models.CharField(max_length=100)
-#     blank4 = models.BooleanField(default=False)
-#     blank5 = models.BooleanField(default=False)
-#     is_email_verified = models.BooleanField(default=False)
-#     email_token = models.CharField(max_length=100 , null=True , blank=True)
-#     profile_image = models.ImageField(upload_to = 'profile')
-#
-#     def __str__(self) -> str:
-#         return self.user
+class Profile(BaseModel):
+    user = models.OneToOneField(User , on_delete=models.CASCADE , related_name="profile")
+    first_name = models.CharField(max_length=25)
+    middle_name = models.CharField(max_length=25)
+    last_name = models.CharField(max_length=25)
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=100, null=False , blank=False)
+    state = models.CharField(max_length=100, null=False , blank=False)
+    country = models.CharField(max_length=100,default="India", null=False , blank=False)
+    mobile = models.CharField(max_length=15,default="+91", unique=True, null=False , blank=False)
+    email = models.EmailField(max_length=100, default="@gmail.com", unique=True, null=False , blank=False)
+    pincode = models.IntegerField()
+    token = models.CharField(max_length=100)
+    mobile_otp = models.CharField(max_length=100)
+    email_otp = models.CharField(max_length=100)
+    blank1 = models.CharField(max_length=100)
+    blank2 = models.CharField(max_length=100)
+    blank3 = models.CharField(max_length=100)
+    blank4 = models.BooleanField(default=False)
+    blank5 = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
+    email_token = models.CharField(max_length=100 , null=True , blank=True)
+    profile_image = models.ImageField(upload_to = 'profile')
+
+    def __str__(self) -> str:
+        return self.user
 
 class City(BaseModel):
     city_name = models.CharField(max_length=100, default="Mumbai")
@@ -83,25 +85,25 @@ class Post(BaseModel):
     def __str__(self):
         return self.title + "\n" + self.description
 
-# @receiver(post_save , sender = User)
-# def  send_email_token(sender , instance , created , **kwargs):
-#     try:
-#         if created:
-#             email_token = str(uuid.uuid4())
-#             Profile.objects.create(user = instance , email_token = email_token)
-#             email = instance.email
-#             send_account_activation_email(email , email_token)
-#
-#     except Exception as e:
-#         print(e)
-#
-#
-# from django.conf import settings
-# from django.core.mail import send_mail
-#
-# def send_account_activation_email(email , email_token):
-#     return
-#         subject = 'Your account needs to be verified'
-#         email_from = settings.EMAIL_HOST_USER
-#         message = f'Hi, click on the link to activate your account http://127.0.0.1:8000/accounts/activate/{email_token}'
-#         send_mail(subject , message , email_from , [email])
+@receiver(post_save , sender = User)
+def  send_email_token(sender , instance , created , **kwargs):
+    try:
+        if created:
+            email_token = str(uuid.uuid4())
+            Profile.objects.create(user = instance , email_token = email_token)
+            email = instance.email
+            send_account_activation_email(email , email_token)
+
+    except Exception as e:
+        print(e)
+
+
+from django.conf import settings
+from django.core.mail import send_mail
+
+def send_account_activation_email(email , email_token):
+
+        subject = 'Your account needs to be verified'
+        email_from = settings.EMAIL_HOST_USER
+        message = f'Hi, click on the link to activate your account http://127.0.0.1:8000/accounts/activate/{email_token}'
+        return send_mail(subject , message , email_from , [email])
